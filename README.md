@@ -1,6 +1,6 @@
-# Harvard ArchivesSpace Custom Reports
+﻿# ArchivesSpace Custom Reports
 
-A plugin containing custom reports used by ArchivesSpace
+A plugin containing custom reports for use in ArchivesSpace
 
 ## Description/Summary
 
@@ -33,10 +33,12 @@ If the report is meant to be per-repo, or has parameters, the query_string metho
 
 Here's an example of one of the simplest cases, a report with no parameters that doesn't filter by the user's repository:
 
-- Class: https://github.com/harvard-library/harvard_aspace_reports/blob/master/backend/model/container_profiles.rb
-- Locale values: https://github.com/harvard-library/harvard_aspace_reports/blob/193f8b7e2f07738cd5cd8bbcc461d3e602c859a6/frontend/locales/en.yml#L11 (lines 11-14)
+- Class: https://github.com/pobocks/custom_aspace_reports/blob/master/backend/model/container_profiles.rb
+- Locale values: https://github.com/pobocks/custom_aspace_reports/blob/193f8b7e2f07738cd5cd8bbcc461d3e602c859a6/frontend/locales/en.yml#L11 (lines 11-14)
 
 And here's a more complex example that uses a parameter:
 
-- Class: https://github.com/harvard-library/harvard_aspace_reports/blob/master/backend/model/resource_top_containers.rb
-- Locale values: https://github.com/harvard-library/harvard_aspace_reports/blob/master/frontend/locales/en.yml#L26 (lines 26-29)
+- Class: https://github.com/pobocks/custom_aspace_reports/blob/master/backend/model/resource_top_containers.rb
+- Locale values: https://github.com/pobocks/custom_aspace_reports/blob/master/frontend/locales/en.yml#L26 (lines 26-29)
+
+
