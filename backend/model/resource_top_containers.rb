@@ -1,10 +1,10 @@
 class ResourceTopContainers < AbstractReport
   # Top containers associated with a particular resource by EADID
 
-  register_report(
-    params: [['eadids', String, 'One or more EADIDs (comma separated) of a resource to get containers for']]
-  )
-
+  register_report( {
+    :params => [['eadids', 'EadIds', 'One or more EADIDs (comma separated) of a resource to get containers for']]
+  }  )
+  
   def initialize(params, job, db)
     super
 

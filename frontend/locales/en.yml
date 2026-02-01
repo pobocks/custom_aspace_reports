@@ -1,5 +1,8 @@
 en:
   reports:
+    parameters:
+      eadids: EAD ID(s)
+      doidsearch: Digital Object ID search term
     top_containers_in_repository:
       title: Top Containers - in repository - Showing Profile, Location, and Resource
       description: Displays all top containers in user's repository. Report contains top containers with profile, location with profile, and resource (identifier, title, and eadid).
@@ -17,13 +20,22 @@ en:
       description: Displays all locations in the system. Report contains locations with location profile.
       identifier_prefix: Location
     unassociated_containers_in_repository:
-      title: Unassociated Top Continers - in Repository - Showing Profile and Location
+      title: Unassociated Top Containers - in Repository - Showing Profile and Location
       description: Displays all top containers in user's repository that have no associated resource or accession. Report contains top containers with profile and location with profile.
     archival_objects_lacking_top_containers:
       title: Archival Objects Lacking Top Containers - in Repository
       description: Displays all archival objects in user's repository lacking top container instances. Report contains archival objects (ref id, title, component identifier) with resource (identifier, title, and eadid) and a count of linked digital object instances.
       identifier_prefix: Archival Object
     resource_top_containers:
-      title: Resource Top Containers
+      title: Resource Top Containers      
+      eadids: EAD IDs
       description: Displays all top containers associated with one or more resources. Report contains top containers with profile, location with profile, and resource (identifier, title, and eadid). Enter multiple EADIDs separated by commas.
       identifier_prefix: Resource
+    archival_objects_associated_with_digital_objects:
+      title: Archival Objects Associated With Digital Objects
+      description: Displays the Archival Objects associated with the Digital Objects that are selected by the input wildcard search term.  Use '*' as your wildcard character.
+      identifier_prefix: Digital Object
+      doidsearch: Digital Object ID search term
+
+
+
