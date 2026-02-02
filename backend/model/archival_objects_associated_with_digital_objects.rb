@@ -18,10 +18,12 @@ class ArchivalObjectsAssociatedWithDigitalObjects < AbstractReport
       select         
         digital_object.digital_object_id as identifier,
         digital_object.title as DO_title,
-        digital_object.digital_object_type_id as object_type,
-        group_concat(distinct ao.ref_id separator '~~') as AOID,        
-        group_concat(distinct ao.title separator ',,,') as AONAME 
+        ev.value as DO_type,
+        group_concat(distinct ao.ref_id separator '|||') as AOID,        
+        group_concat(distinct ao.title separator '|||') as AONAME 
         from digital_object 
+        LEFT JOIN enumeration_value ev 
+          ON digital_object.digital_object_type_id = ev.id
         left outer join instance_do_link_rlshp idlr
           on idlr.digital_object_id = digital_object.id 
         left outer join instance 
