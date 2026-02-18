@@ -17,7 +17,6 @@ class ResourceTopContainersWithIdentifiers < AbstractReport
       @ids += db.literal('["' + id.strip + '",null,null,null]') + ','
     end
     @ids = @ids.chop
-    puts @ids
   end
 
   def query_string
