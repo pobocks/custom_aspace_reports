@@ -33,7 +33,7 @@ en:
       resourceids: Resource IDs
       description: Displays all top containers associated with one or more resources. Report contains top containers with profile, location with profile, and resource (identifier, title, and eadid). Enter multiple EADIDs separated by commas.
       identifier_prefix: Resource
-    resource_top_containers_with_identifiers:
+    resource_top_containers_by_identifiers:
       title: Resource Top Containers By Identifiers    
       resourceids: Resource Identifiers
       description: Displays all top containers associated with one or more resources. Report contains top containers with profile, location with profile, and resource (identifier, title). Enter multiple Resource Identifiers separated by commas. Assumes only the first field of the identier is used.

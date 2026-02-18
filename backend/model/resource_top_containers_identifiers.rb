@@ -1,4 +1,4 @@
-class ResourceTopContainersWithIdentifiers < AbstractReport
+class ResourceTopContainersByIdentifiers < AbstractReport
   # Top containers associated with a particular resource by Resource Identifier
   # Presumes only the first field of the identifier is used
 
