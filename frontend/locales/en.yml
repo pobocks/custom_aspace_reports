@@ -2,6 +2,7 @@ en:
   reports:
     parameters:
       eadids: EAD ID(s)
+      resourceids: Resource ID(s)
       doidsearch: Digital Object ID search term
     top_containers_in_repository:
       title: Top Containers - in repository - Showing Profile, Location, and Resource
@@ -29,8 +30,15 @@ en:
     resource_top_containers:
       title: Resource Top Containers      
       eadids: EAD IDs
+      resourceids: Resource IDs
       description: Displays all top containers associated with one or more resources. Report contains top containers with profile, location with profile, and resource (identifier, title, and eadid). Enter multiple EADIDs separated by commas.
       identifier_prefix: Resource
+    resource_top_containers_with_identifiers:
+      title: Resource Top Containers By Identifiers    
+      resourceids: Resource Identifiers
+      description: Displays all top containers associated with one or more resources. Report contains top containers with profile, location with profile, and resource (identifier, title). Enter multiple Resource Identifiers separated by commas. Assumes only the first field of the identier is used.
+      identifier_prefix: Resource
+      
     archival_objects_associated_with_digital_objects:
       title: Archival Objects Associated With Digital Objects
       description: Displays the Archival Objects associated with the Digital Objects that are selected by the input wildcard search term.  Use '*' as your wildcard character.
