@@ -6,6 +6,14 @@ class ResourceTopContainersByIdentifiers < AbstractReport
     :params => [['resourceids', 'ResourceIds', 'One or more Resource Identifiers (comma separated) of a resource to get containers for']]
   }  )
   
+  def fix_row(row)
+    id = row[:resourceidentifier]
+    if !id.nil?
+      id = id.gsub('null','').sub("[","").sub("]","").gsub('"','')
+      row[:resourceidentifier] = id
+    end
+  end
+
   def initialize(params, job, db)
     super
     @is_eads = true
