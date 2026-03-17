@@ -62,9 +62,12 @@ class AccessionsWithComponents < AbstractReport
       idn += el[:identifier]
       ttl += el[:title]
     end
-    row[:identifier] = idn
-    row[:title] = ttl
-    puts row
+    row[:resource_identifier] = idn
+    row[:resource_title] = ttl
+    content = AccessionInstancesSubreport.new(self,id).get_content
+    puts "INSTANCES"
+    puts content
+    content = AccessionArchivalObjectsSubreport.new(self,id).get_content
     row.delete(:accession_id)
   end
 
