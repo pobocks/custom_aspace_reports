@@ -16,8 +16,7 @@ class AccessionArchivalObjectsSubreport < AbstractSubreport
   def query_string
     "select 
       ref_id, 
-      title, 
-      component_id 
+      title as archival_obj_title
       from archival_object 
       where id in 
         (select archival_object_id from accession_component_links_rlshp 

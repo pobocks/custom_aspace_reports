@@ -18,6 +18,7 @@ class AccessionsWithComponents < AbstractReport
     add_sub_reports(row)
   end
 
+
   def query
     results = db.fetch(query_string)
     info[:number_of_accessions] = results.count
@@ -47,9 +48,11 @@ class AccessionsWithComponents < AbstractReport
   end
   #need to set up repeating columns in first row
   def add_columns(row,subfields, count)
+    puts "COUNT"
+    puts count
     (0..count).to_a.each do |n|
       subfields.each do |f|
-        name = f + "_" + (n = 1).to_s
+        name = f + "_" + (n + 1).to_s
         row[name.to_sym] = ""
       end
     end
@@ -60,49 +63,47 @@ class AccessionsWithComponents < AbstractReport
     puts @first_row
     if @first_row then
       add_columns(row, @subfields[:extents], @counts[:extents])
-      puts row
     end
     content = AccessionExtentsSubreport.new(self,id).get_content
-    puts "EXTENT CONTENT"
-    puts content
-    content.each_with_index do |c,i|
-      row[("extent" + "_" + (i + 1).to_s).to_sym] = c[:extent]
-      row[("container_summary" + "_" + (i + 1).to_s).to_sym] = c[:container_summary]
+    process_multiples(content, row, :extents)
+    if @first_row then
+      add_columns(row, @subfields[:resources], @counts[:resources])
     end
-    puts row
-    # content = AccessionResourcesSubreport.new(self,id).get_content
-    # idn = ''
-    # ttl = ''
-    # if !content.nil? then
-    #   content.each_with_index do |el, inx|
-    #     if inx > 0
-    #       idn += " | "
-    #       ttl += " | "
-    #     end
-    #     idn += el[:identifier]
-    #     ttl += el[:title]
-    #   end
-    # end
-    # row[:resource_identifier] = idn
-    # row[:resource_title] = ttl
+    content = AccessionResourcesSubreport.new(self,id).get_content
+    process_multiples(content, row, :resources)
+    if @first_row then
+      add_columns(row, @subfields[:insts], @counts[:insts])
+    end
     content = AccessionContainersSubreport.new(self,id, @do_enum).get_content
-    puts "CONTAINER"
+    puts "CONTAINER CONTENT"
     puts content
+    process_multiples(content, row, :insts)
     
-    @counter = @counter + 1
-    @first_row = false
     puts "ROW"
     puts row
     content = AccessionArchivalObjectsSubreport.new(self,id).get_content
     row.delete(:accession_id)
+    
+    @counter = @counter + 1
+    @first_row = false
   end
-
+ 
+  def process_multiples(content, row, type)
+    if !content.nil? then
+      content.each_with_index do |c, i|
+        @subfields[type].each do |f|
+          row[(f.to_s + "_" + (i + 1).to_s).to_sym] = c[f]
+        end
+      end
+    end
+  end
+  
   def identifier_field
     :accession_number
   end
+
   def get_count_results(symb, qry)
     count = 1
-    
     results = db.fetch(qry + "  order by numb desc limit 1")
     if !results.nil? and results.count > 0 then
       hit = false
@@ -117,6 +118,7 @@ class AccessionsWithComponents < AbstractReport
     end
     return count
   end
+
   def setup_cell_counts
     # grab the max number of container instances, digital object instances, and archival objects per accession id
     setup = {}
@@ -131,6 +133,6 @@ class AccessionsWithComponents < AbstractReport
     setup.keys.each do |key|
       @counts[key] = get_count_results(key,setup[key])
     end
-
   end
+
 end

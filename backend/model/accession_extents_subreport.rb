@@ -5,11 +5,9 @@ class AccessionExtentsSubreport < AbstractSubreport
     @accession_id = accession_id
   end
 
-  def clean_row(row)
+  def fix_row(row)
     ReportUtils.get_enum_values(row, [:extent_type])
     ReportUtils.fix_extent_format(row)
-    puts "EXTENT CLeAN ROW"
-    puts row
   end
 
   def query_string
