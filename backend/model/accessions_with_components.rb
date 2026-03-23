@@ -4,10 +4,10 @@ class AccessionsWithComponents < AbstractReport
   def initialize(params, job, db)
     super
     @counter = 0
-    @counts = {:resources =>1, :aos => 1, :dos => 1, :insts => 1, :extents => 1}
-    @subfields = {:resources => ["resource_id", "resource_title"], 
-    :aos => ["ref_id", "archival_obj_title"], :dos => ["dig_obj_id", "dig_obj_title", "dig_obj_type"], 
-    :insts => ["instance_type","container", "container_profile", "container_2", "container_3"], 
+    @counts = {:resources =>1, :aos => 1, :dos => 1, :conts => 1, :extents => 1}
+    @subfields = {:resources => ["identifier", "title"], 
+    :aos => ["ref_id", "archival_obj_title"], :dos => ["dig_obj_id", "dig_obj_title","is_representative"], 
+    :conts => ["instance_type","container", "container_profile"], 
     :extents => ["extent", "container_summary"]}
     setup_cell_counts()
     @first_row = true
@@ -48,19 +48,15 @@ class AccessionsWithComponents < AbstractReport
   end
   #need to set up repeating columns in first row
   def add_columns(row,subfields, count)
-    puts "COUNT"
-    puts count
-    (0..count).to_a.each do |n|
+    (1..count).to_a.each do |n|
       subfields.each do |f|
-        name = f + "_" + (n + 1).to_s
+        name = f + "_" + n.to_s
         row[name.to_sym] = ""
       end
     end
   end
   def add_sub_reports(row)
     id = row[:accession_id]
-    puts "FIRSt ROW?"
-    puts @first_row
     if @first_row then
       add_columns(row, @subfields[:extents], @counts[:extents])
     end
@@ -72,16 +68,16 @@ class AccessionsWithComponents < AbstractReport
     content = AccessionResourcesSubreport.new(self,id).get_content
     process_multiples(content, row, :resources)
     if @first_row then
-      add_columns(row, @subfields[:insts], @counts[:insts])
+      add_columns(row, @subfields[:conts], @counts[:conts])
     end
     content = AccessionContainersSubreport.new(self,id, @do_enum).get_content
-    puts "CONTAINER CONTENT"
-    puts content
-    process_multiples(content, row, :insts)
+    process_multiples(content, row, :conts)
     
-    puts "ROW"
-    puts row
     content = AccessionArchivalObjectsSubreport.new(self,id).get_content
+    process_multiples(content, row, :aos)
+
+    content = AccessionDigitalObjectSubreport.new(self,id, @do_enum).get_content
+    process_multiples(content, row, :dos)
     row.delete(:accession_id)
     
     @counter = @counter + 1
@@ -90,9 +86,9 @@ class AccessionsWithComponents < AbstractReport
  
   def process_multiples(content, row, type)
     if !content.nil? then
-      content.each_with_index do |c, i|
+      content.each_with_index do |c, i|        
         @subfields[type].each do |f|
-          row[(f.to_s + "_" + (i + 1).to_s).to_sym] = c[f]
+          row[(f.to_s + "_" + (i + 1).to_s).to_sym] = c[f.to_sym]
         end
       end
     end
@@ -125,13 +121,16 @@ class AccessionsWithComponents < AbstractReport
     setup[:enum] = "select id as numb from enumeration_value where value=\"digital_object\" and enumeration_id in (select id from enumeration where name=\"instance_instance_type\")"
     @do_enum = get_count_results(:enum, "select id as numb from enumeration_value where value=\"digital_object\" and enumeration_id in (select id from enumeration where name=\"instance_instance_type\")")
     # if there's no enum value for digital_object, we nope out of this entire report
-    setup[:resurces] = "select count(resource.id) as numb from resource, spawned_rlshp where spawned_rlshp.resource_id = resource.id group by spawned_rlshp.accession_id"
+    setup[:resources] = "select count(resource.id) as numb from resource, spawned_rlshp where spawned_rlshp.resource_id = resource.id group by spawned_rlshp.accession_id"
     setup[:aos] = "select count(archival_object_id) as numb from accession_component_links_rlshp where accession_id is not NULL group by accession_id"
     setup[:dos] = "select count(instance_type_id) as numb  from instance where accession_id is not NULL and instance_type_id = #{db.literal(@do_enum)} group by accession_id"
-    setup[:insts] = "select count(instance_type_id) as numb  from instance where accession_id is not NULL and instance_type_id != #{db.literal(@do_enum)} group by accession_id"
+    setup[:conts] = "select count(instance_type_id) as numb  from instance where accession_id is not NULL and instance_type_id != #{db.literal(@do_enum)} group by accession_id"
     setup[:extents] = "select count(id) as numb from extent where accession_id is not NULL group by accession_id"
     setup.keys.each do |key|
-      @counts[key] = get_count_results(key,setup[key])
+      count = get_count_results(key,setup[key])
+      if !count.nil? and count > 0
+        @counts[key] = count
+      end
     end
   end
 

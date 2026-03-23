@@ -8,11 +8,8 @@ class AccessionArchivalObjectsSubreport < AbstractSubreport
 
   def query
     results = db.fetch(query_string)
-    results.each do |result|
-      puts result
-    end
-
   end
+  
   def query_string
     "select 
       ref_id, 

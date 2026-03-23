@@ -8,6 +8,7 @@ class AccessionContainersSubreport < AbstractSubreport
     @do_enum = digital_object_type
   end
 
+
   def query
     results = db.fetch(query_string)
     sorted = {}
@@ -16,18 +17,31 @@ class AccessionContainersSubreport < AbstractSubreport
       top_id ||= -1
       unless sorted.has_key?(top_id)
         sorted[top_id] = {}
+        ReportUtils.get_enum_values(result, [:type_1,:instance_type, :type_2, :type_3])
         sorted[top_id][:type] = result[:type_1]
         sorted[top_id][:indicator] = result[:indicator_1]
-        ReportUtils.get_enum_values(sorted[top_id], [:type])
         ReportUtils.fix_container_indicator(sorted[top_id])
+        ReportUtils.fix_container_indicator(result,2)
+        ReportUtils.fix_container_indicator(result,3)
+      # combine all the indicators into one 
+        if !sorted[top_id][:container].nil? then
+          container = sorted[top_id][:container]
+          (2..3).to_a.each do |n| 
+            symb = ("container_" + n.to_s ).to_sym
+            if result[symb].nil? then
+              break
+            end
+            container = container + ", " + result[symb]
+          end
+          sorted[top_id][:container] = container
+        end
         sorted[top_id][:container_profile] = query_profiles(top_id)
-        sorted[top_id][:instances] = []
+        sorted[top_id][:instance_type] = result[:instance_type]
         sorted[top_id][:id] = top_id
       end
       result.delete(:top_container_id)
       result.delete(:indicator_1)
-      result.delete(:type_1)
-      sorted[top_id][:instances].push(result)
+      result.delete(:type_1) 
     end
     sorted.values
   end
@@ -56,15 +70,6 @@ class AccessionContainersSubreport < AbstractSubreport
         on top_container.id = top_container_link_rlshp.top_container_id"
   end
 
-  def fix_row(row)
-    row[:instances].each do |instance|
-      ReportUtils.get_enum_values(instance, [:type_2, :type_3, :instance_type])
-      ReportUtils.fix_container_indicator(instance, 2)
-      ReportUtils.fix_container_indicator(instance, 3)
-    end
-    row[:instances].push(code) if format == 'pdf' || format == 'html'
-    row.delete(:id)
-  end
 
   def query_profiles(container_id)
     query_string = "select name from
