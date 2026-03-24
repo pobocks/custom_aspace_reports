@@ -4,15 +4,17 @@ class AccessionsWithComponents < AbstractReport
   def initialize(params, job, db)
     super
     @counter = 0
-    @counts = {:resources =>1, :aos => 1, :dos => 1, :conts => 1, :extents => 1}
-    @subfields = {:resources => ["identifier", "title"], 
-    :aos => ["ref_id", "archival_obj_title"], :dos => ["dig_obj_id", "dig_obj_title","is_representative"], 
+    @counts = {:resources =>1, :aos => 1, :dos => 1, :conts => 1, :extents => 1, :docs => 1}
+    @subfields = {:resources => ["resource_id", "resource_title"], 
+    :aos => ["ref_id", "archival_obj_title"], 
+    :dos => ["dig_obj_id", "dig_obj_title","is_representative"], 
     :conts => ["instance_type","container", "container_profile"], 
-    :extents => ["extent", "container_summary"]}
+    :extents => ["extent", "container_summary"],
+    :docs => ["external_document_title", "external_document_location"]}
     setup_cell_counts()
     @first_row = true
   end
-
+  
   def fix_row(row)
     clean_row(row)
     add_sub_reports(row)
@@ -29,7 +31,7 @@ class AccessionsWithComponents < AbstractReport
     "select
       id as accession_id,
       identifier as accession_number,
-      title as record_title,
+      title as accession_title,
       accession_date as accession_date,
       general_note,
       acquisition_type_id as acquisition_type,
@@ -46,8 +48,15 @@ class AccessionsWithComponents < AbstractReport
                                            rights_transferred
                                            acknowledgement_sent])
   end
+
+  def record_type
+    'accession'
+  end
+
   #need to set up repeating columns in first row
-  def add_columns(row,subfields, count)
+  def add_columns(row,rec)
+    subfields = @subfields[rec]
+    count = @counts[rec]
     (1..count).to_a.each do |n|
       subfields.each do |f|
         name = f + "_" + n.to_s
@@ -57,27 +66,36 @@ class AccessionsWithComponents < AbstractReport
   end
   def add_sub_reports(row)
     id = row[:accession_id]
-    if @first_row then
-      add_columns(row, @subfields[:extents], @counts[:extents])
-    end
+    add_columns(row, :extents)  if @first_row 
     content = AccessionExtentsSubreport.new(self,id).get_content
     process_multiples(content, row, :extents)
-    if @first_row then
-      add_columns(row, @subfields[:resources], @counts[:resources])
-    end
+    add_columns(row, :resources) if @first_row
     content = AccessionResourcesSubreport.new(self,id).get_content
-    process_multiples(content, row, :resources)
-    if @first_row then
-      add_columns(row, @subfields[:conts], @counts[:conts])
+    if !content.nil?
+      content.each do |c|
+        c[:resource_id] = c[:identifier]
+        c[:resource_title] = c[:title]
+      end
     end
+    process_multiples(content, row, :resources)
+    add_columns(row, :conts) if @first_row 
     content = AccessionContainersSubreport.new(self,id, @do_enum).get_content
     process_multiples(content, row, :conts)
-    
+    add_columns(row, :aos) if @first_row 
     content = AccessionArchivalObjectsSubreport.new(self,id).get_content
     process_multiples(content, row, :aos)
-
+    add_columns(row, :dos) if @first_row 
     content = AccessionDigitalObjectSubreport.new(self,id, @do_enum).get_content
     process_multiples(content, row, :dos)
+    add_columns(row, :docs) if @first_row 
+    content = ExternalDocumentSubreport.new(self,id).get_content
+    if !content.nil? then
+      content.each do |c|
+        c[:external_document_title] = c[:record_title]
+        c[:external_document_location] = c[:location]
+      end
+    end
+    process_multiples(content, row, :docs)
     row.delete(:accession_id)
     
     @counter = @counter + 1
@@ -90,6 +108,11 @@ class AccessionsWithComponents < AbstractReport
         @subfields[type].each do |f|
           row[(f.to_s + "_" + (i + 1).to_s).to_sym] = c[f.to_sym]
         end
+      end
+    else
+      # make sure there's at least cell of one of each type
+      @subfields[type].each do |f|
+        row[(f.to_s + "_1").to_sym] = ''
       end
     end
   end
@@ -126,6 +149,7 @@ class AccessionsWithComponents < AbstractReport
     setup[:dos] = "select count(instance_type_id) as numb  from instance where accession_id is not NULL and instance_type_id = #{db.literal(@do_enum)} group by accession_id"
     setup[:conts] = "select count(instance_type_id) as numb  from instance where accession_id is not NULL and instance_type_id != #{db.literal(@do_enum)} group by accession_id"
     setup[:extents] = "select count(id) as numb from extent where accession_id is not NULL group by accession_id"
+    setup[:docs] = "select count(id) as numb from external_document where accession_id is not NULL group by accession_id"
     setup.keys.each do |key|
       count = get_count_results(key,setup[key])
       if !count.nil? and count > 0
