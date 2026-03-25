@@ -46,6 +46,10 @@ en:
       description: Displays the Archival Objects associated with the Digital Objects that are selected by the input wildcard search term.  Use '*' as your wildcard character.
       identifier_prefix: Digital Object
       doidsearch: Digital Object ID search term
+    accessions_with_components:
+      title: Accessions With Components and Instances
+      description: Displays a "kitchen sink" of elements associated with all accessions. Report contains extents, container instances, resources, archival and digital objects, and external documents.
+      identifier_prefix: Accession
 
 
 

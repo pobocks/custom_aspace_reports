@@ -10,6 +10,7 @@ Currently, the following custom reports are available:
 
   * Archival Objects Associated With Digital Objects
   * Archival Objects Lacking Top Containers - in Repository
+  * Accessions with Components and Instances
   * Container Profiles
   * Locations Showing Profile
   * Locations - Showing Profile and Repository Containers

@@ -11,6 +11,7 @@ class AccessionsWithComponents < AbstractReport
     :conts => ["instance_type","container", "container_profile"], 
     :extents => ["extent", "container_summary"],
     :docs => ["external_document_title", "external_document_location"]}
+    @multifields = {}  # going to contain all the column names for possible multiples
     setup_cell_counts()
     @first_row = true
   end
@@ -53,23 +54,10 @@ class AccessionsWithComponents < AbstractReport
     'accession'
   end
 
-  #need to set up repeating columns in first row
-  def add_columns(row,rec)
-    subfields = @subfields[rec]
-    count = @counts[rec]
-    (1..count).to_a.each do |n|
-      subfields.each do |f|
-        name = f + "_" + n.to_s
-        row[name.to_sym] = ""
-      end
-    end
-  end
   def add_sub_reports(row)
     id = row[:accession_id]
-    add_columns(row, :extents)  if @first_row 
     content = AccessionExtentsSubreport.new(self,id).get_content
     process_multiples(content, row, :extents)
-    add_columns(row, :resources) if @first_row
     content = AccessionResourcesSubreport.new(self,id).get_content
     if !content.nil?
       content.each do |c|
@@ -78,16 +66,12 @@ class AccessionsWithComponents < AbstractReport
       end
     end
     process_multiples(content, row, :resources)
-    add_columns(row, :conts) if @first_row 
     content = AccessionContainersSubreport.new(self,id, @do_enum).get_content
     process_multiples(content, row, :conts)
-    add_columns(row, :aos) if @first_row 
     content = AccessionArchivalObjectsSubreport.new(self,id).get_content
     process_multiples(content, row, :aos)
-    add_columns(row, :dos) if @first_row 
     content = AccessionDigitalObjectSubreport.new(self,id, @do_enum).get_content
     process_multiples(content, row, :dos)
-    add_columns(row, :docs) if @first_row 
     content = ExternalDocumentSubreport.new(self,id).get_content
     if !content.nil? then
       content.each do |c|
@@ -97,24 +81,23 @@ class AccessionsWithComponents < AbstractReport
     end
     process_multiples(content, row, :docs)
     row.delete(:accession_id)
-    
-    @counter = @counter + 1
-    @first_row = false
   end
  
   def process_multiples(content, row, type)
+    # create all the cells for this type and row
+    (1..@counts[type]).to_a.each do |n|
+      @subfields[type].each do |f|
+        row[(f.to_s + "_" + n.to_s).to_sym] = ""
+      end
+    end
     if !content.nil? then
-      content.each_with_index do |c, i|        
+      content.each_with_index do |c, i|
+        cntr = i     
         @subfields[type].each do |f|
           row[(f.to_s + "_" + (i + 1).to_s).to_sym] = c[f.to_sym]
         end
       end
-    else
-      # make sure there's at least cell of one of each type
-      @subfields[type].each do |f|
-        row[(f.to_s + "_1").to_sym] = ''
-      end
-    end
+    end    
   end
   
   def identifier_field
@@ -125,12 +108,10 @@ class AccessionsWithComponents < AbstractReport
     count = 1
     results = db.fetch(qry + "  order by numb desc limit 1")
     if !results.nil? and results.count > 0 then
-      hit = false
       results.each do |result|
         row = result.to_hash
         count = row[:numb]
-        hit = true
-        break if hit
+        break
       end    
     elsif symb.to_s = "enum" then 
       raise 'Unable to identify "digital_object" enumeration value'
