@@ -116,7 +116,7 @@ class AccessionsWithComponents < AbstractReport
         count = row[:numb]
         break
       end    
-    elsif symb.to_s = "enum" then 
+    elsif symb.to_s == "enum" then 
       raise 'Unable to identify "digital_object" enumeration value'
     end
     return count
