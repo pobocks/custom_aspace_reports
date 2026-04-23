@@ -20,14 +20,18 @@ class AccessionDigitalObjectSubreport  < AbstractSubreport
     results.each do |result|
       result[:is_representative] = result[:is_representative].nil? ? "" : "*"
       dohash = query_digital_object(result[:id])
-      result[:dig_obj_id] = dohash[:dig_obj_id]
+      result[:do_id] = dohash[:do_id]
+      result[:do_ref_id] = dohash[:do_ref_id]
       result[:dig_obj_title] = dohash[:dig_obj_title]
       contents.push(result)
     end
     contents
   end
   def query_digital_object(instance_id)
-    query_string = "select digital_object.digital_object_id as dig_obj_id, title as dig_obj_title
+    query_string = "select 
+      CONCAT(\"/digital_objects/\",id) as do_id,
+      digital_object.digital_object_id as do_ref_id, 
+      title as dig_obj_title
     from digital_object where id in 
     (select digital_object_id 
       from instance_do_link_rlshp where instance_id = #{db.literal(instance_id)})"

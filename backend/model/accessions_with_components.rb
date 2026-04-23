@@ -6,8 +6,8 @@ class AccessionsWithComponents < AbstractReport
     @counter = 0
     @counts = {:resources =>1, :aos => 1, :dos => 1, :conts => 1, :extents => 1, :docs => 1}
     @subfields = {:resources => ["resource_id", "resource_title"], 
-    :aos => ["ref_id", "archival_obj_title"], 
-    :dos => ["dig_obj_id", "dig_obj_title","is_representative"], 
+    :aos => ["ao_id","ref_id", "archival_obj_title"], 
+    :dos => ["do_id","do_ref_id", "dig_obj_title","is_representative"], 
     :conts => ["instance_type","container", "container_profile"], 
     :extents => ["extent", "container_summary"],
     :docs => ["external_document_title", "external_document_location"]}
@@ -84,6 +84,9 @@ class AccessionsWithComponents < AbstractReport
   end
  
   def process_multiples(content, row, type)
+    # count for type of content
+    row[(type.to_s + " count").to_sym] = content.nil? ? 0 : content.size()
+
     # create all the cells for this type and row
     (1..@counts[type]).to_a.each do |n|
       @subfields[type].each do |f|

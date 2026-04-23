@@ -12,6 +12,7 @@ class AccessionArchivalObjectsSubreport < AbstractSubreport
   
   def query_string
     "select 
+      CONCAT(\"/archival_objects/\",id) as ao_id,
       ref_id, 
       title as archival_obj_title
       from archival_object 
