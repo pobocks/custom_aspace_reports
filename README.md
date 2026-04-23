@@ -1,4 +1,4 @@
-﻿﻿﻿﻿# ArchivesSpace Custom Reports
+﻿﻿# ArchivesSpace Custom Reports
 
 A plugin containing custom reports for use in ArchivesSpace
 
