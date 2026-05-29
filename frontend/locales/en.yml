@@ -1,4 +1,7 @@
 en:
+  accession_archival_object_instance:
+    _singular: Archival Object Instance
+    _plural: Archival Object Instances
   reports:
     parameters:
       eadids: EAD ID(s)
