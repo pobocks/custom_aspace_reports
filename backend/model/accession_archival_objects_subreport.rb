@@ -20,4 +20,8 @@ class AccessionArchivalObjectsSubreport < AbstractSubreport
         (select archival_object_id from accession_component_links_rlshp 
           where accession_id = #{db.literal(@accession_id)}) ;"
   end
+
+  def self.field_name
+    'archival_object_instance'
+  end
 end

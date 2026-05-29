@@ -88,6 +88,6 @@ class AccessionContainersSubreport < AbstractSubreport
   end
 
   def self.field_name
-    'instance'
+    'container_instance'
   end
 end

@@ -15,4 +15,8 @@ class AccessionExtentsSubreport < AbstractSubreport
     from extent 
     where accession_id = #{db.literal(@accession_id)}"
   end
+
+  def self.field_name
+    'extent'
+  end
 end

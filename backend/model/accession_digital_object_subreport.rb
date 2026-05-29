@@ -46,4 +46,8 @@ class AccessionDigitalObjectSubreport  < AbstractSubreport
     end
     return dohash
   end
+
+  def self.field_name
+    'digital_object_instance'
+  end
 end
