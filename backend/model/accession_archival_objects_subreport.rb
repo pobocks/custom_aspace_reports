@@ -1,5 +1,5 @@
 class AccessionArchivalObjectsSubreport < AbstractSubreport
-  register_subreport('archival_object_instance', ['accession'])
+  register_subreport('accession_archival_object_instance', ['accession'])
 
   def initialize(parent_report, accession_id)
     super(parent_report)
