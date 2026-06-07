@@ -41,7 +41,7 @@ class ResourceCalculatedExtents < AbstractReport
       row[:title] = ext[:title]
       row[:container_count] = ext[:container_count].nil? ? 0 : ext[:container_count]
       row[:missing_container_profile] = ext[:container_without_profile_count] == 0 ?  "No" : "Yes" 
-      row[:total_extent] = "#{ext[:total_extent]} #{ext[:units]}"
+      row[:total_extent] = extent_string(ext[:total_extent],ext[:volume], ext[:units])
       if @detailed then    
         (1..@max_container_count).to_a.each do |n|
           row[("container_#{n.to_s}").to_sym] = ""
@@ -51,8 +51,8 @@ class ResourceCalculatedExtents < AbstractReport
         n = 1
         ext[:containers].each do |key, h|
           row[("container_#{n.to_s}").to_sym] = key
-          row[("number_#{n.to_s}").to_sym] = h[:count]
-          row[("extent_#{n.to_s}").to_sym] = "#{h[:extent]} #{ext[:units]}"
+          row[("number_#{n.to_s}").to_sym] = h[:count].nil? ? 0 : h[:count]
+          row[("extent_#{n.to_s}").to_sym] = extent_string(h[:extent], ext[:volume], ext[:units])
           n += 1
         end
         # here's where we add the detailed rows
@@ -79,6 +79,15 @@ class ResourceCalculatedExtents < AbstractReport
     end
   end
  
+  def extent_string(ext, vol, units)
+    if ext == 0 then
+      'None'
+    else
+      ext_string = ext.to_s + ' '
+      ext_string += (vol ? 'cubic ' : 'linear ')
+      ext_string  += units.to_s
+    end
+  end
   def query_string
     <<~SOME_SQL
           SELECT id,
