@@ -41,8 +41,10 @@ en:
     resource_calculated_extents:
       title: "Resources: Show Calculated Extents"
       details: Include individual container details
-      description: Displays the calculated total extent, if possible, of the resources specified. The calculation is exactly the same as that used in the 'Calculate Extent' functionality available on the Edit Resource page. If you select 'Include individual container details', the containers used, and their specifics, will also be displayed. If a Top Container has been assigned that does not have a profile, the missing_container_profile will be set to 'Yes'. Enter multiple Resource Identifiers separated by commas. Assumes only the first field of the identier is used.    
+      description: Displays the calculated total extent, if possible, of the resources specified. The calculation is exactly the same as that used in the 'Calculate Extent' functionality available on the Edit Resource page, and the output mimics that presentation. If you select 'Include individual container details', the containers used, and their specifics, will also be displayed. Enter multiple Resource Identifiers separated by commas. Assumes that only the first field of the identier is used.    
       identifier_prefix: Resource
+      units: Units
+      count: Count
 
     resource_top_containers_by_identifiers:
       title: Resource Top Containers By Identifiers    
