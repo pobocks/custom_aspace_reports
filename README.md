@@ -17,6 +17,7 @@ Currently, the following custom reports are available:
   * Locations - Showing Profile and Repository Containers
   * Resource Top Containers 
   * Resource Top Containers By Identifier
+  * Resources: Show Calculated Extents
   * Top Containers - in repository - Showing Profile, Location, and Resource
   * Unassociated Top Containers - in Repository - Showing Profile and Location
 
