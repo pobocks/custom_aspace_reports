@@ -45,20 +45,34 @@ class ResourceCalculatedExtents < AbstractReport
           row[:title] = ext[:title]
           row[:container] = key
           row[:count] = h[:count].nil? ? 0 : h[:count]
-          row[:missing_container_profile] = ''
           row[:extent] = h[:extent]
           row[:units] = units
           array.push(row)
         end
       end
+      if ext[:container_without_profile_count] > 0 then
+        row = {}
+        row[:identifier] = identifier
+        row[:title] = ext[:title]
+        row[:container] = "Container(s) Without Profile"
+        row[:count] = ext[:container_without_profile_count]
+        row[:extent] = 0
+        row[:units] = ''
+        array.push(row)
+      end
       row = {}
       row[:identifier] = identifier
       row[:title] = ext[:title]
       row[:container] = 'TOTAL'
-      row[:count] = ext[:container_count].nil? ? 0 : ext[:container_count]
-      row[:missing_container_profile] = ext[:container_without_profile_count] == 0 ?  "No" : "Yes" 
-      row[:extent] = ext[:total_extent]
-      row[:units] = units
+      if ext[:container_count].nil? || ext[:container_count] == 0 then
+        row[:count] = ext[:container_count]
+        row[:extent] = 0
+        row[:units] = ''
+      else
+        row[:count] = ext[:container_count]
+        row[:extent] = ext[:total_extent]
+        row[:units] = units
+      end
       array.push(row)
     end
     info[:repository] = repository
@@ -81,9 +95,13 @@ class ResourceCalculatedExtents < AbstractReport
     end
   end
  
-  def units_string( vol,units)   
-    units_string = (vol ? 'cubic ' : 'linear ')
-    units_string  += units.to_s
+  def units_string( vol,units)  
+    if units.nil? then
+      '' 
+    else
+      units_string = (vol ? 'cubic ' : 'linear ')
+      units_string  += units.to_s
+    end
   end
   def query_string
     <<~SOME_SQL
