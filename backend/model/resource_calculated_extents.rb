@@ -36,27 +36,29 @@ class ResourceCalculatedExtents < AbstractReport
     end
     # do the row stuff here!
     @extents.each do |ext|
-      row = {}
-      row[:identifier] = ext[:identifier].gsub('null','').gsub('[','').gsub(']','')
-      row[:title] = ext[:title]
-      row[:container_count] = ext[:container_count].nil? ? 0 : ext[:container_count]
-      row[:missing_container_profile] = ext[:container_without_profile_count] == 0 ?  "No" : "Yes" 
-      row[:total_extent] = extent_string(ext[:total_extent],ext[:volume], ext[:units])
-      if @detailed then    
-        (1..@max_container_count).to_a.each do |n|
-          row[("container_#{n.to_s}").to_sym] = ""
-          row[("number_#{n.to_s}").to_sym] = ""
-          row[("extent_#{n.to_s}").to_sym] = ""
-        end
-        n = 1
+      identifier = ext[:identifier].gsub('null','').gsub('[','').gsub(']','')
+      units = units_string(ext[:volume], ext[:units])
+      if @detailed then
         ext[:containers].each do |key, h|
-          row[("container_#{n.to_s}").to_sym] = key
-          row[("number_#{n.to_s}").to_sym] = h[:count].nil? ? 0 : h[:count]
-          row[("extent_#{n.to_s}").to_sym] = extent_string(h[:extent], ext[:volume], ext[:units])
-          n += 1
+          row = {}
+          row[:identifier] = identifier
+          row[:title] = ext[:title]
+          row[:container] = key
+          row[:count] = h[:count].nil? ? 0 : h[:count]
+          row[:missing_container_profile] = ''
+          row[:extent] = h[:extent]
+          row[:units] = units
+          array.push(row)
         end
-        # here's where we add the detailed rows
       end
+      row = {}
+      row[:identifier] = identifier
+      row[:title] = ext[:title]
+      row[:container] = 'TOTAL'
+      row[:count] = ext[:container_count].nil? ? 0 : ext[:container_count]
+      row[:missing_container_profile] = ext[:container_without_profile_count] == 0 ?  "No" : "Yes" 
+      row[:extent] = ext[:total_extent]
+      row[:units] = units
       array.push(row)
     end
     info[:repository] = repository
@@ -79,14 +81,9 @@ class ResourceCalculatedExtents < AbstractReport
     end
   end
  
-  def extent_string(ext, vol, units)
-    if ext == 0 then
-      'None'
-    else
-      ext_string = ext.to_s + ' '
-      ext_string += (vol ? 'cubic ' : 'linear ')
-      ext_string  += units.to_s
-    end
+  def units_string( vol,units)   
+    units_string = (vol ? 'cubic ' : 'linear ')
+    units_string  += units.to_s
   end
   def query_string
     <<~SOME_SQL
