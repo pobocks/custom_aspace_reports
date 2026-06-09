@@ -1,6 +1,4 @@
 class ResourceCalculatedExtents < AbstractReport
-  require 'uri'
-  require 'net/http'
   include JSONModel
 
   register_report( {
