@@ -46,6 +46,11 @@ en:
       units: Units
       count: Count
 
+    top_containers_extents:
+      title: Top Containers Extents
+      description: Displays  information on all the Top Containers for a resource, including Indicator, Container Profile, Width (in inches), and Location.  Enter multiple Resource Identifiers separated by commas. Assumes that only the first field of the identier is used.
+      identifier_prefix: Resource
+
     resource_top_containers_by_identifiers:
       title: Resource Top Containers By Identifiers    
       resourceids: Resource Identifiers
