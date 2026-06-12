@@ -89,7 +89,7 @@ class TopContainersExtents < AbstractReport
                 row[:container_profile] = prof.display_string
                 width = prof.width
                 width = convert(width.to_f, prof.dimension_units.intern)
-                row[width] = width.round(@decimal_places_in_published_extent)
+                row[:width] = width.round(@decimal_places_in_published_extent)
               end
               location = tc.related_records(:top_container_housed_at).first
               location &&= location.title
