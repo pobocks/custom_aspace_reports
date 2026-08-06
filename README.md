@@ -1,7 +1,9 @@
 ﻿﻿ArchivesSpace Custom Reports
 --------------------
 
-A plugin containing custom reports for use in ArchivesSpace
+A plugin containing custom reports for use in ArchivesSpace.
+
+Also, this plugin allows for the [addition of columns to browse and search](BrSrch.md).
 
 ## Description/Summary
 
